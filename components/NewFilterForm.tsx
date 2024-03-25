@@ -28,8 +28,9 @@ const NewFilterForm = ({
   initCategories,
   initBrands
 }: NewFilterFormProps) => {
-  const defaultName = initPreference?.name;
-  const defaultCountry = initPreference?.country || 'germany';
+  console.log(initPreference);
+  const [name, setName] = useState(initPreference?.name);
+  const [country, setCountry] = useState(initPreference?.country || 'germany');
   const defaultMerchants = initMerchants?.map((merchant) => ({
     key: merchant.merchant.url,
     label: merchant.merchant.name
@@ -38,21 +39,33 @@ const NewFilterForm = ({
     key: brand.brand.slug,
     label: brand.brand.name
   }));
-  const defaultMinimumScore = initPreference?.min_score || 0;
-  const defaultDelay = initPreference?.delay || 0;
-  const defaultPriceError = initPreference?.price_error || false;
-  const defaultCadence = initPreference?.cadence || 'yesterday';
-  const defaultIncrementalOnly = initPreference?.incremental || false;
-  const defaultWhatsappNotificationReport =
-    initPreference?.whatsapp_notification_report || false;
-  const defaultWhatsappNotificationSingleDeals =
-    initPreference?.whatsapp_notification_single_deals || false;
+  const [minimumScore, setMinimumScore] = useState(
+    initPreference?.min_score || 0
+  );
+  const [delay, setDelay] = useState(initPreference?.delay || 0);
+  const [priceError, setPriceError] = useState(
+    initPreference?.price_error || false
+  );
+  const [cadence, setCadence] = useState(
+    initPreference?.cadence || 'yesterday'
+  );
+  const [incrementalOnly, setIncrementalOnly] = useState(
+    initPreference?.incremental || false
+  );
+  const [whatsappNotificationReport, setWhatsappNotificationReport] = useState(
+    initPreference?.whatsapp_notification_report || false
+  );
+  const [whatsappNotificationSingleDeals, setWhatsappNotificationSingleDeals] =
+    useState(initPreference?.whatsapp_notification_single_deals || false);
+
+  console.log('single deals', whatsappNotificationSingleDeals);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingBrands, setLoadingBrands] = useState(false);
 
   const [merchants, setMerchants] = useState<{ key: string; label: string }[]>(
     []
@@ -109,9 +122,6 @@ const NewFilterForm = ({
       allCategories
     );
 
-    console.log('categories', categories);
-    console.log('allCategories', allCategories);
-
     // add partial checked categories
     Object.keys(selectedCategories).map((key) => {
       const allKeys = getAllKeys(key.split('-'));
@@ -124,7 +134,6 @@ const NewFilterForm = ({
         }
       });
     });
-    console.log('selectedCategories', selectedCategories);
     return selectedCategories;
   };
 
@@ -183,11 +192,15 @@ const NewFilterForm = ({
   };
 
   const getBrands = async () => {
+    setLoadingBrands(true);
     await NodeService.getBrandsFromCategoryTree(
       selectedCategoriesKeys,
       await NodeService.getTreeNodes()
     ).then((data) => {
-      if (data) setBrands(data);
+      if (data) {
+        setBrands(data);
+        setLoadingBrands(false);
+      }
     });
   };
 
@@ -269,7 +282,8 @@ const NewFilterForm = ({
             className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-sm sm:leading-6"
             placeholder="My first preference"
             required
-            defaultValue={defaultName}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </InputElement>
       </div>
@@ -281,7 +295,8 @@ const NewFilterForm = ({
             autoComplete="country-name"
             className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-sm sm:leading-6"
             required
-            defaultValue={defaultCountry}
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
           >
             <option value="germany">Germany</option>
             <option disabled>Austria</option>
@@ -361,25 +376,50 @@ const NewFilterForm = ({
           )}
         </InputElement>
         <InputElement label="Brands">
-          <MultiSelect
-            value={selectedBrands}
-            options={brands}
-            onChange={(e) => {
-              setSelectedBrands(e.value);
-              setSelectAllBrands(e.value.length === brands.length);
-            }}
-            selectAll={selectAllBrands}
-            onSelectAll={(e) => {
-              setSelectedBrands(e.checked ? [] : brands);
-              setSelectAllBrands(!e.checked);
-            }}
-            virtualScrollerOptions={{ itemSize: 43 }}
-            maxSelectedLabels={3}
-            placeholder="Select Brands"
-            className="md:w-20rem w-full border border-gray-300 rounded-md"
-            filter
-            required
-          />
+          {loadingBrands ? (
+            <div className="h-12 rounded-lg border w-full flex justify-start items-center">
+              <svg
+                className="animate-spin ml-4 h-5 w-5 text-indigo-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </div>
+          ) : (
+            <MultiSelect
+              value={selectedBrands}
+              options={brands}
+              onChange={(e) => {
+                setSelectedBrands(e.value);
+                setSelectAllBrands(e.value.length === brands.length);
+              }}
+              selectAll={selectAllBrands}
+              onSelectAll={(e) => {
+                setSelectedBrands(e.checked ? [] : brands);
+                setSelectAllBrands(!e.checked);
+              }}
+              virtualScrollerOptions={{ itemSize: 43 }}
+              maxSelectedLabels={3}
+              placeholder="Select Brands"
+              className="md:w-20rem w-full border border-gray-300 rounded-md"
+              filter
+              required
+            />
+          )}
         </InputElement>
       </div>
 
@@ -391,7 +431,8 @@ const NewFilterForm = ({
             id="minimum-score"
             className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-sm sm:leading-6"
             required
-            defaultValue={defaultMinimumScore}
+            value={minimumScore}
+            onChange={(e) => setMinimumScore(Number(e.target.value))}
           />
         </InputElement>
         <InputElement label="Minutes after publication">
@@ -403,7 +444,8 @@ const NewFilterForm = ({
             min={15}
             max={1440}
             required
-            defaultValue={defaultDelay}
+            value={delay}
+            onChange={(e) => setDelay(Number(e.target.value))}
           />
         </InputElement>
       </div>
@@ -417,7 +459,8 @@ const NewFilterForm = ({
                 name="price-error"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                defaultChecked={defaultPriceError}
+                checked={priceError}
+                onChange={(e) => setPriceError(e.target.checked)}
               />
             </div>
             <div className="text-sm leading-6">
@@ -436,7 +479,8 @@ const NewFilterForm = ({
             name="cadence"
             className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
             required
-            defaultValue={defaultCadence}
+            value={cadence}
+            onChange={(e) => setCadence(e.target.value)}
           >
             <option value="yesterday">
               Yesterday data (delivered at 8am current day)
@@ -462,7 +506,8 @@ const NewFilterForm = ({
                 name="incremental-only"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                defaultChecked={defaultIncrementalOnly}
+                checked={incrementalOnly}
+                onChange={(e) => setIncrementalOnly(e.target.checked)}
               />
             </div>
             <div className="text-sm leading-6">
@@ -482,7 +527,11 @@ const NewFilterForm = ({
                   name="whatsapp-notification-report"
                   type="checkbox"
                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                  defaultChecked={defaultWhatsappNotificationReport}
+                  checked={whatsappNotificationReport}
+                  onChange={(e) => {
+                    setWhatsappNotificationReport(e.target.checked);
+                    console.log(e.target.checked);
+                  }}
                 />
               </div>
               <div className="text-sm leading-6">
@@ -498,7 +547,10 @@ const NewFilterForm = ({
                   name="whatsapp-notification-single-deals"
                   type="checkbox"
                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                  defaultChecked={defaultWhatsappNotificationSingleDeals}
+                  checked={whatsappNotificationSingleDeals}
+                  onChange={(e) =>
+                    setWhatsappNotificationSingleDeals(e.target.checked)
+                  }
                 />
               </div>
               <div className="text-sm leading-6">
