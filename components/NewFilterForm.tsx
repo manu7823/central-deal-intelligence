@@ -8,45 +8,18 @@ import { NodeService } from '@/utils/node-service';
 import { useRouter } from 'next/navigation';
 import { TreeNode } from 'primereact/treenode';
 import { TreeSelect, TreeSelectSelectionKeysType } from 'primereact/treeselect';
-
-interface IDbCategory {
-  category: {
-    id: number;
-    name: string;
-    slug: string;
-    level: number;
-  };
-}
+import {
+  IDbBrand,
+  IDbCategory,
+  IDbMerchant,
+  IDbPreference
+} from '@/utils/types';
 
 interface NewFilterFormProps {
-  initPreference?: {
-    id: number;
-    created_at: string;
-    name: string;
-    country: string;
-    min_score: number;
-    delay: number;
-    price_error: boolean;
-    cadence: string;
-    incremental: boolean;
-    whatsapp_notification_report: boolean;
-    whatsapp_notification_single_deals: boolean;
-  };
-  initMerchants?: {
-    merchant: {
-      id: number;
-      name: string;
-      url: string;
-    };
-  }[];
+  initPreference?: IDbPreference;
+  initMerchants?: IDbMerchant[];
   initCategories?: IDbCategory[];
-  initBrands?: {
-    brand: {
-      id: number;
-      name: string;
-      slug: string;
-    };
-  }[];
+  initBrands?: IDbBrand[];
 }
 
 const NewFilterForm = ({

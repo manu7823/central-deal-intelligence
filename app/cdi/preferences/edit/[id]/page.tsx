@@ -5,6 +5,12 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
+import {
+  IDbBrand,
+  IDbCategory,
+  IDbMerchant,
+  IDbPreference
+} from '@/utils/types';
 
 // Note: supabaseAdmin uses the SERVICE_ROLE_KEY which you must only use in a secure server-side context
 // as it has admin privileges and overwrites RLS policies!
@@ -38,6 +44,7 @@ const EditPreferencesPage = async ({ params }: any) => {
     .select()
     .eq('id', params.id)
     .eq('user', user.id)
+    .returns<IDbPreference>()
     .single();
 
   if (resultPreference.error) throw resultPreference.error;
@@ -48,7 +55,8 @@ const EditPreferencesPage = async ({ params }: any) => {
   const resultMerchants = await supabaseAdmin
     .from('deal_sub_pref_merchants')
     .select('merchant ( id, name, url )')
-    .eq('sub_pref', params.id);
+    .eq('sub_pref', params.id)
+    .returns<IDbMerchant[]>();
 
   if (resultMerchants.error) throw resultMerchants.error;
 
@@ -58,7 +66,8 @@ const EditPreferencesPage = async ({ params }: any) => {
   const resultCategories = await supabaseAdmin
     .from('deal_sub_pref_categories')
     .select('category ( id, name, slug, level )')
-    .eq('sub_pref', params.id);
+    .eq('sub_pref', params.id)
+    .returns<IDbCategory[]>();
 
   if (resultCategories.error) throw resultCategories.error;
 
@@ -68,7 +77,8 @@ const EditPreferencesPage = async ({ params }: any) => {
   const resultBrands = await supabaseAdmin
     .from('deal_sub_pref_brands')
     .select('brand ( id, name, slug )')
-    .eq('sub_pref', params.id);
+    .eq('sub_pref', params.id)
+    .returns<IDbBrand[]>();
 
   if (resultBrands.error) throw resultBrands.error;
 

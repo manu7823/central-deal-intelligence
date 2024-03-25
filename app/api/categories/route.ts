@@ -15,27 +15,6 @@ export async function GET(req: Request) {
 
   if (req.method === 'GET') {
     try {
-      // get main categories from URL query parameters
-      let mainCategories = [];
-      let parentIds: Set<number> = new Set();
-      if (queryParameters['main-categories']) {
-        let mainCategorySlugs: string[];
-        if (typeof queryParameters['main-categories'] === 'string') {
-          mainCategorySlugs = queryParameters['main-categories'].split(',');
-        } else {
-          mainCategorySlugs = queryParameters['main-categories'] || [];
-        }
-
-        const res = await supabaseAdmin
-          .from('categories')
-          .select()
-          .in('slug', mainCategorySlugs);
-
-        if (res.error) throw res.error;
-
-        mainCategories = res.data;
-      }
-
       // create base query for all level 1 categories
       let query1 = supabaseAdmin
         .from('categories')
@@ -44,20 +23,7 @@ export async function GET(req: Request) {
         .filter('level', 'eq', '1')
         .order('name', { ascending: true });
 
-      // if category filter are provided, filter by them
-      if (mainCategories.length > 0) {
-        query1 = query1.in(
-          'id',
-          mainCategories.map((cat) => cat.id)
-        );
-      }
-
       const res1 = await query1;
-
-      // if category filter are provided, add category ids as parent ids for following queries
-      if (mainCategories.length > 0 && res1.data) {
-        parentIds = new Set(res1.data.map((cat) => cat.id));
-      }
 
       if (res1.error) throw res1.error;
 
@@ -68,21 +34,7 @@ export async function GET(req: Request) {
         .filter('level', 'eq', '2')
         .order('name', { ascending: true });
 
-      if (mainCategories.length > 0) {
-        query2 = query2.in(
-          'parent',
-          mainCategories.map((cat) => cat.id)
-        );
-      }
-
       const res2 = await query2;
-
-      // NO FILTERS NEEDE BELOW LEVEL 2. FITLERING IS DONE IN THE CLIENT
-      // Can be optimized by doing it here
-
-      // if (mainCategories.length > 0 && res2.data) {
-      //   res2.data.map((cat) => parentIds.add(cat.id));
-      // }
 
       if (res2.error) throw res2.error;
 
