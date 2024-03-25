@@ -149,30 +149,36 @@ export default function RootLayout({ children }: PropsWithChildren) {
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            {navigation.map((item) => (
-                              <li key={item.name}>
-                                <a
-                                  href={item.href}
-                                  className={classNames(
-                                    pathname.includes(item.href)
-                                      ? 'bg-gray-50 text-indigo-600'
-                                      : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
-                                    'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                  )}
-                                >
-                                  <item.icon
-                                    className={classNames(
-                                      pathname.includes(item.href)
-                                        ? 'text-indigo-600'
-                                        : 'text-gray-400 group-hover:text-indigo-600',
-                                      'h-6 w-6 shrink-0'
-                                    )}
-                                    aria-hidden="true"
-                                  />
-                                  {item.name}
-                                </a>
-                              </li>
-                            ))}
+                            {navigation.map((item) => {
+                              if (item.disabled) {
+                                return <></>;
+                              } else {
+                                return (
+                                  <li key={item.name}>
+                                    <a
+                                      href={item.href}
+                                      className={classNames(
+                                        pathname.includes(item.href)
+                                          ? 'bg-gray-50 text-indigo-600'
+                                          : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                                        'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                      )}
+                                    >
+                                      <item.icon
+                                        className={classNames(
+                                          pathname.includes(item.href)
+                                            ? 'text-indigo-600'
+                                            : 'text-gray-400 group-hover:text-indigo-600',
+                                          'h-6 w-6 shrink-0'
+                                        )}
+                                        aria-hidden="true"
+                                      />
+                                      {item.name}
+                                    </a>
+                                  </li>
+                                );
+                              }
+                            })}
                           </ul>
                         </li>
                         {/* <li>
@@ -243,30 +249,46 @@ export default function RootLayout({ children }: PropsWithChildren) {
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
-                    {navigation.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className={classNames(
-                            pathname.includes(item.href)
-                              ? 'bg-gray-50 text-indigo-600'
-                              : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
-                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                          )}
-                        >
-                          <item.icon
-                            className={classNames(
-                              pathname.includes(item.href)
-                                ? 'text-indigo-600'
-                                : 'text-gray-400 group-hover:text-indigo-600',
-                              'h-6 w-6 shrink-0'
-                            )}
-                            aria-hidden="true"
-                          />
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
+                    {navigation.map((item) => {
+                      if (item.disabled) {
+                        return (
+                          <li key={item.name}>
+                            <div className="text-gray-300 hover:text-indigo-300 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                              <item.icon
+                                className="text-gray-300 group-hover:text-indigo-300 h-6 w-6 shrink-0"
+                                aria-hidden="true"
+                              />
+                              {item.name} (coming soon)
+                            </div>
+                          </li>
+                        );
+                      } else {
+                        return (
+                          <li key={item.name}>
+                            <a
+                              href={item.href}
+                              className={classNames(
+                                pathname.includes(item.href)
+                                  ? 'bg-gray-50 text-indigo-600'
+                                  : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                                'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                              )}
+                            >
+                              <item.icon
+                                className={classNames(
+                                  pathname.includes(item.href)
+                                    ? 'text-indigo-600'
+                                    : 'text-gray-400 group-hover:text-indigo-600',
+                                  'h-6 w-6 shrink-0'
+                                )}
+                                aria-hidden="true"
+                              />
+                              {item.name}
+                            </a>
+                          </li>
+                        );
+                      }
+                    })}
                   </ul>
                 </li>
                 {/* <li>
@@ -302,16 +324,13 @@ export default function RootLayout({ children }: PropsWithChildren) {
                   </ul>
                 </li> */}
                 <li className="mt-auto">
-                  <a
-                    href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                  >
+                  <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-300 hover:bg-gray-50 hover:text-indigo-300">
                     <Cog6ToothIcon
-                      className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                      className="h-6 w-6 shrink-0 text-gray-300 group-hover:text-indigo-300"
                       aria-hidden="true"
                     />
-                    Settings
-                  </a>
+                    Settings (comming soon)
+                  </div>
                 </li>
               </ul>
             </nav>
