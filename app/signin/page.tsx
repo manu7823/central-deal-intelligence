@@ -12,8 +12,8 @@ export default async function SignIn() {
   }
 
   return (
-    <>
-      <div className="flex justify-center height-screen-helper">
+    <div className="h-screen flex flex-col justify-between w-screen">
+      <div className="flex justify-center my-auto">
         <div className="flex flex-col justify-between max-w-lg p-3 m-auto w-80 ">
           <h1 className="text-4xl text-center mb-8">Login</h1>
           {/* <div className="flex justify-center pb-12 ">
@@ -23,6 +23,6 @@ export default async function SignIn() {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }
