@@ -28,7 +28,6 @@ const NewFilterForm = ({
   initCategories,
   initBrands
 }: NewFilterFormProps) => {
-  console.log(initPreference);
   const [name, setName] = useState(initPreference?.name);
   const [country, setCountry] = useState(initPreference?.country || 'germany');
   const defaultMerchants = initMerchants?.map((merchant) => ({
@@ -57,8 +56,6 @@ const NewFilterForm = ({
   );
   const [whatsappNotificationSingleDeals, setWhatsappNotificationSingleDeals] =
     useState(initPreference?.whatsapp_notification_single_deals || false);
-
-  console.log('single deals', whatsappNotificationSingleDeals);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -530,7 +527,6 @@ const NewFilterForm = ({
                   checked={whatsappNotificationReport}
                   onChange={(e) => {
                     setWhatsappNotificationReport(e.target.checked);
-                    console.log(e.target.checked);
                   }}
                 />
               </div>

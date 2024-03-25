@@ -17,39 +17,42 @@ export async function GET(req: Request) {
     try {
       // get brand slugs from URL query parameters
       let brands: { name: any; slug: any }[] | null = null;
+      let slugs: string[];
+      let query = supabaseAdmin
+        .from('brands_categories_enriched')
+        .select('brand_id');
+
       if (queryParameters['slugs']) {
-        let slugs: string[];
         if (typeof queryParameters['slugs'] === 'string') {
           slugs = queryParameters['slugs'].split(',');
         } else {
           slugs = queryParameters['slugs'] || [];
         }
 
-        // get brand ids from slugs
-        const res = await supabaseAdmin
-          .from('brands_categories_enriched')
-          .select('brand_id')
-          .in('slug', slugs);
-
-        if (res.error) throw res.error;
-
-        const brand_ids = res.data;
-
-        var uniqueBrandIds = new Set(
-          brand_ids.map((brand: any) => brand.brand_id)
-        );
-
-        // get brands from brand ids
-        const resBrands = await supabaseAdmin
-          .from('brands')
-          .select('name, slug')
-          .in('id', Array.from(uniqueBrandIds))
-          .order('name', { ascending: true });
-
-        if (resBrands.error) throw resBrands.error;
-
-        brands = resBrands.data;
+        query.in('slug', slugs);
       }
+
+      // get brand ids from slugs
+      const res = await query;
+
+      if (res.error) throw res.error;
+
+      const brand_ids = res.data;
+
+      var uniqueBrandIds = new Set(
+        brand_ids.map((brand: any) => brand.brand_id)
+      );
+
+      // get brands from brand ids
+      const resBrands = await supabaseAdmin
+        .from('brands')
+        .select('name, slug')
+        .in('id', Array.from(uniqueBrandIds))
+        .order('name', { ascending: true });
+
+      if (resBrands.error) throw resBrands.error;
+
+      brands = resBrands.data;
 
       return new Response(JSON.stringify({ brands }), {
         status: 200
