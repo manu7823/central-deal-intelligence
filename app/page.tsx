@@ -1,16 +1,4 @@
-import { useSupabase } from './supabase-provider';
-import {
-  getSession,
-  getSubscription,
-  getActiveProductsWithPrices
-} from '@/app/supabase-server';
-import Pricing from '@/components/Pricing';
 import RegisterForm from '@/components/RegisterForm';
-import { getURL } from '@/utils/helpers';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { FormEvent } from 'react';
-
 import {
   FireIcon,
   LinkIcon,
@@ -18,12 +6,6 @@ import {
 } from '@heroicons/react/20/solid';
 
 export default async function PricingPage() {
-  const [session, products, subscription] = await Promise.all([
-    getSession(),
-    getActiveProductsWithPrices(),
-    getSubscription()
-  ]);
-
   return (
     <section className="container mx-auto mb-20">
       <div className="max-w-screen-lg">

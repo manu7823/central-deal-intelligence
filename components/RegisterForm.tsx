@@ -5,8 +5,8 @@ import { useSupabase } from '@/app/supabase-provider';
 import { TreeSelect, TreeSelectSelectionKeysType } from 'primereact/treeselect';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
-import { TreeNode } from 'primereact/treenode';
 import { NotificationLimitService } from '@/utils/notification-limit-service';
+import { TreeNode } from 'primereact/treenode';
 
 const RegisterForm = () => {
   const { supabase } = useSupabase();
@@ -37,19 +37,6 @@ const RegisterForm = () => {
 
   const onChangeBrands = async (event: any) => {
     setSelectedBrandsKeys(event.value);
-  };
-
-  const getCategory = async (index: string, tree: any) => {
-    const indexArray = index.split('-');
-    let resultNode = tree[indexArray[0]];
-    let resultNodeLevel = 1;
-
-    for (let i = 1; i < indexArray.length; i++) {
-      resultNode = resultNode.children[indexArray[i]];
-      resultNodeLevel = i + 1;
-    }
-
-    return { slug: resultNode.data, level: resultNodeLevel };
   };
 
   const amazonAffiliateIdRef = useRef<HTMLInputElement>(null);
@@ -124,72 +111,18 @@ const RegisterForm = () => {
   }, [selectedCategoriesKeys, selectedBrandsKeys]);
 
   const transformCategories = async () => {
-    // get selected categories
-    const tree = await NodeService.getTreeNodes();
-    let transformedCategories = [];
-    let transformedBrands = [];
+    const transformedCategories = await NodeService.transformCategories(
+      selectedCategoriesKeys,
+      selectedBrandsKeys,
+      await NodeService.getTreeNodes()
+    );
 
-    // convert selected categories to db format and push all to transformedCategories array
-    if (typeof selectedCategoriesKeys === 'object') {
-      let subtreesToSkip: string[] = [];
-
-      for (const key in selectedCategoriesKeys) {
-        if (selectedCategoriesKeys.hasOwnProperty(key)) {
-          // @ts-ignore
-          const value = selectedCategoriesKeys[key];
-          if (!subtreesToSkip.some((substring) => key.startsWith(substring))) {
-            if (!value.partialChecked) {
-              subtreesToSkip.push(key);
-              const category = await getCategory(key, tree);
-              transformedCategories.push(category);
-            }
-          }
-        }
-      }
-    }
-
-    // convert selected brands to db format and push all to transformedBrands array
-    if (typeof selectedBrandsKeys === 'object') {
-      let subtreesToSkip: string[] = [];
-
-      for (const key in selectedBrandsKeys) {
-        if (selectedBrandsKeys.hasOwnProperty(key)) {
-          // @ts-ignore
-          const value = selectedBrandsKeys[key];
-          if (!subtreesToSkip.some((substring) => key.startsWith(substring))) {
-            if (!value.partialChecked) {
-              subtreesToSkip.push(key);
-              const category = await getCategory(key, tree);
-              transformedBrands.push(category);
-            }
-          }
-        }
-      }
-    }
-
-    const brandsAndCategories = [
-      ...transformedCategories,
-      ...transformedBrands
-    ];
-
-    // remove duplicates from brandsAndCategories array
-    const allCategories: { slug: string; level: number }[] = [];
-    brandsAndCategories.forEach((item) => {
-      if (
-        !allCategories.some(
-          (categoryOrBrand) => categoryOrBrand.slug === item.slug
-        )
-      ) {
-        allCategories.push(item);
-      }
-    });
-
-    setAllCategories(allCategories);
-    console.log(allCategories);
+    setAllCategories(transformedCategories);
 
     const updatedNotificationLimit =
-      await NotificationLimitService.getNotificationLimit(allCategories);
-    console.log(updatedNotificationLimit);
+      await NotificationLimitService.getNotificationLimit(
+        transformedCategories
+      );
     setMaxDeals(updatedNotificationLimit);
   };
 
@@ -269,7 +202,7 @@ const RegisterForm = () => {
                   id="firstName"
                   autoComplete="given-name"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  placeholder='John'
+                  placeholder="John"
                 />
               </div>
             </div>
@@ -288,7 +221,7 @@ const RegisterForm = () => {
                   id="lastName"
                   autoComplete="family-name"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  placeholder='Doe'
+                  placeholder="Doe"
                 />
               </div>
             </div>
@@ -307,7 +240,7 @@ const RegisterForm = () => {
                   type="email"
                   autoComplete="email"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  placeholder='john@doe.com'
+                  placeholder="john@doe.com"
                 />
               </div>
             </div>
