@@ -149,12 +149,22 @@ export default function RootLayout({ children }: PropsWithChildren) {
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            {navigation.map((item) => {
+                            {navigation.map((item, idx) => {
                               if (item.disabled) {
-                                return <></>;
+                                return (
+                                  <li key={idx}>
+                                    <div className="text-gray-300 hover:text-indigo-300 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                                      <item.icon
+                                        className="text-gray-300 group-hover:text-indigo-300 h-6 w-6 shrink-0"
+                                        aria-hidden="true"
+                                      />
+                                      {item.name} (coming soon)
+                                    </div>
+                                  </li>
+                                );
                               } else {
                                 return (
-                                  <li key={item.name}>
+                                  <li key={idx}>
                                     <a
                                       href={item.href}
                                       className={classNames(
@@ -214,16 +224,13 @@ export default function RootLayout({ children }: PropsWithChildren) {
                           </ul>
                         </li> */}
                         <li className="mt-auto">
-                          <a
-                            href="#"
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                          >
+                          <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-300 hover:bg-gray-50 hover:text-indigo-300">
                             <Cog6ToothIcon
-                              className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                              className="h-6 w-6 shrink-0 text-gray-300 group-hover:text-indigo-300"
                               aria-hidden="true"
                             />
-                            Settings
-                          </a>
+                            Settings (coming soon)
+                          </div>
                         </li>
                       </ul>
                     </nav>
@@ -249,10 +256,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
-                    {navigation.map((item) => {
+                    {navigation.map((item, idx) => {
                       if (item.disabled) {
                         return (
-                          <li key={item.name}>
+                          <li key={idx}>
                             <div className="text-gray-300 hover:text-indigo-300 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                               <item.icon
                                 className="text-gray-300 group-hover:text-indigo-300 h-6 w-6 shrink-0"
@@ -264,7 +271,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
                         );
                       } else {
                         return (
-                          <li key={item.name}>
+                          <li key={idx}>
                             <a
                               href={item.href}
                               className={classNames(
