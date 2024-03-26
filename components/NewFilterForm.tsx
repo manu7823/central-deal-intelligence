@@ -66,11 +66,11 @@ const NewFilterForm = ({
   const [loadingBrands, setLoadingBrands] = useState(false);
 
   const [merchants, setMerchants] = useState<
-    { key: string; label: string; id: number }[]
+    { key: string; label: string; id: string }[]
   >([]);
   const [selectAllMerchants, setSelectAllMerchants] = useState(false);
   const [selectedMerchants, setSelectedMerchants] = useState<
-    { key: string; label: string; id: number }[]
+    { key: string; label: string; id: string }[]
   >(defaultMerchants || []);
 
   const router = useRouter();

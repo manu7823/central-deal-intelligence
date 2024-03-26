@@ -60,7 +60,14 @@ const EditPreferencesPage = async ({ params }: any) => {
 
   if (resultMerchants.error) throw resultMerchants.error;
 
-  const merchants = resultMerchants.data;
+  const merchants = resultMerchants.data.map((merchant) => {
+    return {
+      merchant: {
+        ...merchant.merchant,
+        id: String(merchant.merchant.id)
+      }
+    };
+  });
 
   // Get the categories from the database
   const resultCategories = await supabaseAdmin

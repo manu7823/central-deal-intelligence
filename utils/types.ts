@@ -23,7 +23,7 @@ export interface IDbPreference {
 
 export interface IDbMerchant {
   merchant: {
-    id: number;
+    id: string;
     name: string;
     url: string;
   };
