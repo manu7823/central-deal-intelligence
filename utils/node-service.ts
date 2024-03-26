@@ -122,6 +122,7 @@ export const NodeService = {
     var merchants = await data.result;
 
     merchants = merchants.map((merchant: any) => ({
+      id: merchant.id,
       key: merchant.url,
       label: merchant.name
     }));

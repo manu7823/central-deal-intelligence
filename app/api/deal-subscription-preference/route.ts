@@ -69,34 +69,17 @@ export async function POST(req: Request) {
 
       const newPreferencesId = resultAddPreferences.data.id;
 
-      // 4. Erich the merchants with their IDs
-      const enrichedMerchants = await Promise.all(
-        jsonMerchants.map(async (merchant: any) => ({
-          ...merchant,
-          id: await supabaseAdmin
-            .from('deal_merchants')
-            .select('id')
-            .eq('name', merchant.label)
-            .single()
-            .then((res: any) => res.data.id)
-        }))
-      );
+      const sub_pref_merchant_records = jsonMerchants.map((merchant: any) => ({
+        sub_pref: newPreferencesId,
+        merchant: merchant.id
+      }));
 
-      // 5. Insert the merchants preferences association into the database
-      await Promise.all(
-        enrichedMerchants.map(async (merchant: any) => {
-          const { data, error } = await supabaseAdmin
-            .from('deal_sub_pref_merchants')
-            .insert([
-              {
-                sub_pref: newPreferencesId,
-                merchant: merchant.id
-              }
-            ]);
+      // 4. Insert the merchants preferences association into the database
+      const resultAddMerchants = await supabaseAdmin
+        .from('deal_sub_pref_merchants')
+        .insert(sub_pref_merchant_records);
 
-          if (error) throw error;
-        })
-      );
+      if (resultAddMerchants.error) throw resultAddMerchants.error;
 
       // 6. Enrich the categories with their IDs
       const enrichedCategories = await Promise.all(
@@ -274,20 +257,7 @@ export async function PUT(req: Request) {
 
       if (resultUpdatePreference.error) throw resultUpdatePreference.error;
 
-      // 3. Erich new merchants with their IDs
-      const enrichedNewMerchants = await Promise.all(
-        jsonMerchants.map(async (merchant: any) => ({
-          ...merchant,
-          id: await supabaseAdmin
-            .from('deal_merchants')
-            .select('id')
-            .eq('name', merchant.label)
-            .single()
-            .then((res: any) => res.data.id)
-        }))
-      );
-
-      // 4. Delete all the merchants preferences association from the database
+      // 3. Delete all the merchants preferences association from the database
       const resultDeleteMerchants = await supabaseAdmin
         .from('deal_sub_pref_merchants')
         .delete()
@@ -295,21 +265,17 @@ export async function PUT(req: Request) {
 
       if (resultDeleteMerchants.error) throw resultDeleteMerchants.error;
 
-      // 5. Insert the merchants preferences association into the database
-      await Promise.all(
-        enrichedNewMerchants.map(async (merchant: any) => {
-          const { data, error } = await supabaseAdmin
-            .from('deal_sub_pref_merchants')
-            .insert([
-              {
-                sub_pref: id,
-                merchant: merchant.id
-              }
-            ]);
+      const sub_pref_merchant_records = jsonMerchants.map((merchant: any) => ({
+        sub_pref: id,
+        merchant: merchant.id
+      }));
 
-          if (error) throw error;
-        })
-      );
+      // 4. Insert the merchants preferences association into the database
+      const resultAddMerchants = await supabaseAdmin
+        .from('deal_sub_pref_merchants')
+        .insert(sub_pref_merchant_records);
+
+      if (resultAddMerchants.error) throw resultAddMerchants.error;
 
       // 6. Enrich the categories with their IDs
       const enrichedNewCategories = await Promise.all(

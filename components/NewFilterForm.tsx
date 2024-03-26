@@ -32,7 +32,8 @@ const NewFilterForm = ({
   const [country, setCountry] = useState(initPreference?.country || 'germany');
   const defaultMerchants = initMerchants?.map((merchant) => ({
     key: merchant.merchant.url,
-    label: merchant.merchant.name
+    label: merchant.merchant.name,
+    id: merchant.merchant.id
   }));
   const defaultBrands = initBrands?.map((brand) => ({
     key: brand.brand.slug,
@@ -64,12 +65,12 @@ const NewFilterForm = ({
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingBrands, setLoadingBrands] = useState(false);
 
-  const [merchants, setMerchants] = useState<{ key: string; label: string }[]>(
-    []
-  );
+  const [merchants, setMerchants] = useState<
+    { key: string; label: string; id: number }[]
+  >([]);
   const [selectAllMerchants, setSelectAllMerchants] = useState(false);
   const [selectedMerchants, setSelectedMerchants] = useState<
-    { key: string; label: string }[]
+    { key: string; label: string; id: number }[]
   >(defaultMerchants || []);
 
   const router = useRouter();

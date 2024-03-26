@@ -8,7 +8,7 @@ export async function GET(req: Request) {
       await client.connect();
 
       const res = await client.query(
-        'SELECT name, url FROM deal_merchants ORDER BY name ASC'
+        'SELECT id, name, url FROM deal_merchants ORDER BY name ASC'
       );
       await client.end();
 
