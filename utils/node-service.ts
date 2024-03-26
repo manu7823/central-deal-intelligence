@@ -22,24 +22,28 @@ export const NodeService = {
         key: String(idx1),
         label: cat1.name,
         data: cat1.slug,
+        id: String(cat1.id),
         children: categories
           .filter((child: any) => child.parent == cat1.id)
           .map((cat2: any, idx2: number) => ({
             key: idx1 + '-' + idx2,
             label: cat2.name,
             data: cat2.slug,
+            id: String(cat2.id),
             children: categories
               .filter((child: any) => child.parent == cat2.id)
               .map((cat3: any, idx3: number) => ({
                 key: idx1 + '-' + idx2 + '-' + idx3,
                 label: cat3.name,
                 data: cat3.slug,
+                id: String(cat3.id),
                 children: categories
                   .filter((child: any) => child.parent == cat3.id)
                   .map((cat4: any, idx4: number) => ({
                     key: idx1 + '-' + idx2 + '-' + idx3 + '-' + idx4,
                     label: cat4.name,
                     data: cat4.slug,
+                    id: String(cat4.id),
                     children: categories
                       .filter((child: any) => child.parent == cat4.id)
                       .map((cat5: any, idx5: number) => ({
@@ -55,6 +59,7 @@ export const NodeService = {
                           idx5,
                         label: cat5.name,
                         data: cat5.slug,
+                        id: String(cat5.id),
                         children: categories
                           .filter((child: any) => child.parent == cat5.id)
                           .map((cat6: any, idx6: number) => ({
@@ -72,6 +77,7 @@ export const NodeService = {
                               idx6,
                             label: cat6.name,
                             data: cat6.slug,
+                            id: String(cat6.id),
                             children: categories
                               .filter((child: any) => child.parent == cat6.id)
                               .map((cat7: any, idx7: number) => ({
@@ -90,7 +96,8 @@ export const NodeService = {
                                   '-' +
                                   idx7,
                                 label: cat7.name,
-                                data: cat7.slug
+                                data: cat7.slug,
+                                id: String(cat7.id)
                               }))
                           }))
                       }))
@@ -171,7 +178,7 @@ export const NodeService = {
       resultNodeLevel = i + 1;
     }
 
-    return { slug: resultNode.data, level: resultNodeLevel };
+    return { slug: resultNode.data, level: resultNodeLevel, id: resultNode.id };
   },
 
   async transformCategories(

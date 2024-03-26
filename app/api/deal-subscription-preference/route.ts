@@ -81,41 +81,24 @@ export async function POST(req: Request) {
 
       if (resultAddMerchants.error) throw resultAddMerchants.error;
 
-      // 5. Enrich the categories with their IDs
-      const enrichedCategories = await Promise.all(
-        jsonCategories.map(async (category: any) => ({
-          ...category,
-          id: await supabaseAdmin
-            .from('categories')
-            .select('id')
-            .eq('slug', category.slug)
-            .single()
-            .then((res: any) => res.data.id)
-        }))
-      );
+      const sub_pref_category_records = jsonCategories.map((category: any) => ({
+        sub_pref: newPreferencesId,
+        category: category.id
+      }));
 
-      // 6. Insert the categories preferences association into the database
-      await Promise.all(
-        enrichedCategories.map(async (category: any) => {
-          const { data, error } = await supabaseAdmin
-            .from('deal_sub_pref_categories')
-            .insert([
-              {
-                sub_pref: newPreferencesId,
-                category: category.id
-              }
-            ]);
+      // 5. Insert the categories preferences association into the database
+      const resultAddCategories = await supabaseAdmin
+        .from('deal_sub_pref_categories')
+        .insert(sub_pref_category_records);
 
-          if (error) throw error;
-        })
-      );
+      if (resultAddCategories.error) throw resultAddCategories.error;
 
       const sub_pref_brands_records = jsonBrands.map((brands: any) => ({
         sub_pref: newPreferencesId,
         merchant: brands.id
       }));
 
-      // 7. Insert the brands preferences association into the database
+      // 6. Insert the brands preferences association into the database
       const resultAddBrands = await supabaseAdmin
         .from('deal_sub_pref_brands')
         .insert(sub_pref_brands_records);
@@ -260,20 +243,7 @@ export async function PUT(req: Request) {
 
       if (resultAddMerchants.error) throw resultAddMerchants.error;
 
-      // 6. Enrich the categories with their IDs
-      const enrichedNewCategories = await Promise.all(
-        jsonCategories.map(async (category: any) => ({
-          ...category,
-          id: await supabaseAdmin
-            .from('categories')
-            .select('id')
-            .eq('slug', category.slug)
-            .single()
-            .then((res: any) => res.data.id)
-        }))
-      );
-
-      // 7. Delete all the categories preferences association from the database
+      // 5. Delete all the categories preferences association from the database
       const resultDeleteCategories = await supabaseAdmin
         .from('deal_sub_pref_categories')
         .delete()
@@ -281,23 +251,19 @@ export async function PUT(req: Request) {
 
       if (resultDeleteCategories.error) throw resultDeleteCategories.error;
 
-      // 8. Insert the categories preferences association into the database
-      await Promise.all(
-        enrichedNewCategories.map(async (category: any) => {
-          const { data, error } = await supabaseAdmin
-            .from('deal_sub_pref_categories')
-            .insert([
-              {
-                sub_pref: id,
-                category: category.id
-              }
-            ]);
+      const sub_pref_category_records = jsonCategories.map((category: any) => ({
+        sub_pref: id,
+        category: category.id
+      }));
 
-          if (error) throw error;
-        })
-      );
+      // 6. Insert the categories preferences association into the database
+      const resultAddCategories = await supabaseAdmin
+        .from('deal_sub_pref_categories')
+        .insert(sub_pref_category_records);
 
-      // 10. Delete all the brands preferences association from the database
+      if (resultAddCategories.error) throw resultAddCategories.error;
+
+      // 7. Delete all the brands preferences association from the database
       const resultDeleteBrands = await supabaseAdmin
         .from('deal_sub_pref_brands')
         .delete()
@@ -310,7 +276,7 @@ export async function PUT(req: Request) {
         brand: brands.id
       }));
 
-      // 11. Insert the brands preferences association into the database
+      // 8. Insert the brands preferences association into the database
       const resultAddBrands = await supabaseAdmin
         .from('deal_sub_pref_brands')
         .insert(sub_pref_brands_records);

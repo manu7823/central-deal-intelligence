@@ -78,7 +78,14 @@ const EditPreferencesPage = async ({ params }: any) => {
 
   if (resultCategories.error) throw resultCategories.error;
 
-  const categories = resultCategories.data;
+  const categories = resultCategories.data.map((category) => {
+    return {
+      category: {
+        ...category.category,
+        id: String(category.category.id)
+      }
+    };
+  });
 
   // Get the brands from the database
   const resultBrands = await supabaseAdmin

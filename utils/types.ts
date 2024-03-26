@@ -1,6 +1,6 @@
 export interface IDbCategory {
   category: {
-    id: number;
+    id: string;
     name: string;
     slug: string;
     level: number;
