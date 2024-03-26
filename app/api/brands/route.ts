@@ -46,7 +46,7 @@ export async function GET(req: Request) {
       // get brands from brand ids
       const resBrands = await supabaseAdmin
         .from('brands')
-        .select('name, slug')
+        .select('id, name, slug')
         .in('id', Array.from(uniqueBrandIds))
         .order('name', { ascending: true });
 

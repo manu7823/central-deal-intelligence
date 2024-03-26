@@ -301,7 +301,8 @@ export const NodeService = {
     if (brands) {
       brands = brands.map((brand: any) => ({
         key: brand.slug,
-        label: brand.name
+        label: brand.name,
+        id: String(brand.id)
       }));
     }
 

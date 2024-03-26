@@ -31,7 +31,7 @@ export interface IDbMerchant {
 
 export interface IDbBrand {
   brand: {
-    id: number;
+    id: string;
     name: string;
     slug: string;
   };

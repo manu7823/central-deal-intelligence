@@ -37,12 +37,13 @@ const NewFilterForm = ({
   }));
   const defaultBrands = initBrands?.map((brand) => ({
     key: brand.brand.slug,
-    label: brand.brand.name
+    label: brand.brand.name,
+    id: brand.brand.id
   }));
   const [minimumScore, setMinimumScore] = useState(
-    initPreference?.min_score || 0
+    initPreference?.min_score || 200
   );
-  const [delay, setDelay] = useState(initPreference?.delay || 0);
+  const [delay, setDelay] = useState(initPreference?.delay || 120);
   const [priceError, setPriceError] = useState(
     initPreference?.price_error || false
   );
@@ -162,6 +163,9 @@ const NewFilterForm = ({
   const getMerchants = async () => {
     const merchants = await NodeService.getMerchants();
     setMerchants(merchants);
+    if (initMerchants) {
+      setSelectAllMerchants(defaultMerchants?.length === merchants.length);
+    }
   };
 
   const getAllKeys = (parts: string[]) => {
@@ -197,6 +201,9 @@ const NewFilterForm = ({
     ).then((data) => {
       if (data) {
         setBrands(data);
+        if (initBrands) {
+          setSelectAllBrands(defaultBrands?.length === data.length);
+        }
         setLoadingBrands(false);
       }
     });

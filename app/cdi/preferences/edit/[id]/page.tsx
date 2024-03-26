@@ -89,7 +89,14 @@ const EditPreferencesPage = async ({ params }: any) => {
 
   if (resultBrands.error) throw resultBrands.error;
 
-  const brands = resultBrands.data;
+  const brands = resultBrands.data.map((brand) => {
+    return {
+      brand: {
+        ...brand.brand,
+        id: String(brand.brand.id)
+      }
+    };
+  });
 
   return (
     <section className="container mx-auto mb-20">
