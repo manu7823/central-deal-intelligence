@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       const jsonBrands = JSON.parse(brands);
 
       // 3. insert data into the database
+      // @ts-ignore
       const { data, error } = await supabase.rpc('upsert_sub_pref', {
         pref_id: -1,
         user_id: user.id,
@@ -166,6 +167,7 @@ export async function PUT(req: Request) {
       const jsonBrands = JSON.parse(brands);
 
       // 2. Update preference
+      // @ts-ignore
       const { data, error } = await supabase.rpc('upsert_sub_pref', {
         pref_id: id,
         user_id: user.id,
