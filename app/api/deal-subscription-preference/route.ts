@@ -45,65 +45,26 @@ export async function POST(req: Request) {
       const jsonCategories = JSON.parse(categories);
       const jsonBrands = JSON.parse(brands);
 
-      // TODO: Improvement: Do all the insert call with one transactional rpc call
+      // 3. insert data into the database
+      const { data, error } = await supabase.rpc('upsert_sub_pref', {
+        pref_id: -1,
+        user_id: user.id,
+        pref_name: name,
+        pref_country: country,
+        pref_min_score: minScore,
+        pref_delay: delay,
+        pref_price_error: priceError,
+        pref_cadence: cadence,
+        pref_incremental: incrementalOnly,
+        pref_whatsapp_notification_report: whatsappNotificationReport,
+        pref_whatsapp_notification_single_deals:
+          whatsappNotificationSingleDeals,
+        merchant_ids: jsonMerchants.map((merchant: any) => merchant.id),
+        category_ids: jsonCategories.map((category: any) => category.id),
+        brand_ids: jsonBrands.map((brand: any) => brand.id)
+      });
 
-      // 3. Insert the preferences into the database
-      const resultAddPreferences = await supabaseAdmin
-        .from('deal_sub_pref')
-        .insert({
-          user: user.id,
-          name,
-          country,
-          min_score: minScore,
-          delay,
-          price_error: priceError,
-          cadence,
-          incremental: incrementalOnly,
-          whatsapp_notification_report: whatsappNotificationReport,
-          whatsapp_notification_single_deals: whatsappNotificationSingleDeals
-        })
-        .select('id')
-        .single();
-
-      if (resultAddPreferences.error) throw resultAddPreferences.error;
-
-      const newPreferencesId = resultAddPreferences.data.id;
-
-      const sub_pref_merchant_records = jsonMerchants.map((merchant: any) => ({
-        sub_pref: newPreferencesId,
-        merchant: merchant.id
-      }));
-
-      // 4. Insert the merchants preferences association into the database
-      const resultAddMerchants = await supabaseAdmin
-        .from('deal_sub_pref_merchants')
-        .insert(sub_pref_merchant_records);
-
-      if (resultAddMerchants.error) throw resultAddMerchants.error;
-
-      const sub_pref_category_records = jsonCategories.map((category: any) => ({
-        sub_pref: newPreferencesId,
-        category: category.id
-      }));
-
-      // 5. Insert the categories preferences association into the database
-      const resultAddCategories = await supabaseAdmin
-        .from('deal_sub_pref_categories')
-        .insert(sub_pref_category_records);
-
-      if (resultAddCategories.error) throw resultAddCategories.error;
-
-      const sub_pref_brands_records = jsonBrands.map((brands: any) => ({
-        sub_pref: newPreferencesId,
-        merchant: brands.id
-      }));
-
-      // 6. Insert the brands preferences association into the database
-      const resultAddBrands = await supabaseAdmin
-        .from('deal_sub_pref_brands')
-        .insert(sub_pref_brands_records);
-
-      if (resultAddBrands.error) throw resultAddBrands.error;
+      if (error) throw error;
 
       return new Response('ok', {
         status: 200
@@ -205,85 +166,27 @@ export async function PUT(req: Request) {
       const jsonBrands = JSON.parse(brands);
 
       // 2. Update preference
-      const resultUpdatePreference = await supabaseAdmin
-        .from('deal_sub_pref')
-        .update({
-          name,
-          country,
-          min_score: minScore,
-          delay,
-          price_error: priceError,
-          cadence,
-          incremental: incrementalOnly,
-          whatsapp_notification_report: whatsappNotificationReport,
-          whatsapp_notification_single_deals: whatsappNotificationSingleDeals
-        })
-        .eq('id', id)
-        .eq('user', user.id);
+      const { data, error } = await supabase.rpc('upsert_sub_pref', {
+        pref_id: id,
+        user_id: user.id,
+        pref_name: name,
+        pref_country: country,
+        pref_min_score: minScore,
+        pref_delay: delay,
+        pref_price_error: priceError,
+        pref_cadence: cadence,
+        pref_incremental: incrementalOnly,
+        pref_whatsapp_notification_report: whatsappNotificationReport,
+        pref_whatsapp_notification_single_deals:
+          whatsappNotificationSingleDeals,
+        merchant_ids: jsonMerchants.map((merchant: any) => merchant.id),
+        category_ids: jsonCategories.map((category: any) => category.id),
+        brand_ids: jsonBrands.map((brand: any) => brand.id)
+      });
 
-      if (resultUpdatePreference.error) throw resultUpdatePreference.error;
+      if (error) throw error;
 
-      // 3. Delete all the merchants preferences association from the database
-      const resultDeleteMerchants = await supabaseAdmin
-        .from('deal_sub_pref_merchants')
-        .delete()
-        .eq('sub_pref', id);
-
-      if (resultDeleteMerchants.error) throw resultDeleteMerchants.error;
-
-      const sub_pref_merchant_records = jsonMerchants.map((merchant: any) => ({
-        sub_pref: id,
-        merchant: merchant.id
-      }));
-
-      // 4. Insert the merchants preferences association into the database
-      const resultAddMerchants = await supabaseAdmin
-        .from('deal_sub_pref_merchants')
-        .insert(sub_pref_merchant_records);
-
-      if (resultAddMerchants.error) throw resultAddMerchants.error;
-
-      // 5. Delete all the categories preferences association from the database
-      const resultDeleteCategories = await supabaseAdmin
-        .from('deal_sub_pref_categories')
-        .delete()
-        .eq('sub_pref', id);
-
-      if (resultDeleteCategories.error) throw resultDeleteCategories.error;
-
-      const sub_pref_category_records = jsonCategories.map((category: any) => ({
-        sub_pref: id,
-        category: category.id
-      }));
-
-      // 6. Insert the categories preferences association into the database
-      const resultAddCategories = await supabaseAdmin
-        .from('deal_sub_pref_categories')
-        .insert(sub_pref_category_records);
-
-      if (resultAddCategories.error) throw resultAddCategories.error;
-
-      // 7. Delete all the brands preferences association from the database
-      const resultDeleteBrands = await supabaseAdmin
-        .from('deal_sub_pref_brands')
-        .delete()
-        .eq('sub_pref', id);
-
-      if (resultDeleteBrands.error) throw resultDeleteBrands.error;
-
-      const sub_pref_brands_records = jsonBrands.map((brands: any) => ({
-        sub_pref: id,
-        brand: brands.id
-      }));
-
-      // 8. Insert the brands preferences association into the database
-      const resultAddBrands = await supabaseAdmin
-        .from('deal_sub_pref_brands')
-        .insert(sub_pref_brands_records);
-
-      if (resultAddBrands.error) throw resultAddBrands.error;
-
-      return new Response(JSON.stringify({ resultUpdatePreference }), {
+      return new Response('ok', {
         status: 200
       });
     } catch (err: any) {
