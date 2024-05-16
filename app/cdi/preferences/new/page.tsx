@@ -15,10 +15,6 @@ export default async function Account() {
         <h1 className="text-4xl my-8">Preferences</h1>
         <div className="my-8 space-y-8 max-w-screen-md">
           <div>
-            <h3 className="text-base font-semibold leading-7 text-gray-900">
-              Lorem Ipsum
-            </h3>
-            <p className="mt-1 text-sm leading-6 text-gray-600">Lorem Ipsum</p>
             <NewFilterForm />
           </div>
         </div>
