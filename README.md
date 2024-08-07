@@ -1,3 +1,23 @@
+# Next.js The Greatest Deals App
+
+## Setup environment variables
+
+Create a `.env.local` file in the root of the project and add the environment variables you can find in the `.env.example` file. You can find the values for the production environment variables in the Vercel dashboard. There you can find additional variables that are not in the `.env.example` file. Maybe you need to add them to the `.env.local` file too, depending on the features you want to use.
+
+## Install dependencies and run the Next.js client
+
+Run the following commands to install dependencies and start the development server:
+
+```bash
+npm install
+npm run dev
+# or
+yarn
+yarn dev
+```
+
+Below you can find the original README from the template this project is based on.
+
 # Next.js Subscription Payments Starter
 
 The all-in-one starter kit for high-performance SaaS applications.
